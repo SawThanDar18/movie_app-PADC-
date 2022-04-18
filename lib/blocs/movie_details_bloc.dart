@@ -49,33 +49,47 @@ import 'package:movie_app/data/vos/movie_vo.dart';
 class MovieDetailsBloc extends ChangeNotifier{
 
   MovieVO? mMovie;
-  List<ActorVO>? castList;
-  List<ActorVO>? crewList;
+  List<ActorVO> castList = [];
+  List<ActorVO> crewList = [];
+  List<MovieVO> mRelatedMovies = [];
 
   MovieModel movieModel = MovieModelImpl();
 
-  MovieDetailsBloc(int movieId) {
+  MovieDetailsBloc(int movieId, [MovieModel? movieModel]) {
 
-    movieModel.getMovieDetails(movieId).then((movie) {
+    if (movieModel != null) {
+      this.movieModel = movieModel;
+    }
+
+    this.movieModel.getMovieDetails(movieId).then((movie) {
       mMovie = movie;
+      getRelatedMovies(movie.genres?.first.id ?? 0);
       notifyListeners();
     }).catchError((error) {
       debugPrint(error.toString());
     });
 
-    movieModel.getMovieDetailsFromDatabase(movieId).then((movie) {
+    this.movieModel.getMovieDetailsFromDatabase(movieId).listen((movie) {
       mMovie = movie;
       notifyListeners();
     });
 
-    movieModel.getCreditsByMovie(movieId).then((actorList) {
+    this.movieModel.getCreditsByMovie(movieId).then((actorList) {
       castList = actorList.first ?? [];
       crewList = actorList[1] ?? [];
       notifyListeners();
     }).catchError((error) {
       debugPrint(error.toString());
     });
+  }
 
+  void getRelatedMovies(int genreId) {
+    movieModel.getMoviesByGenre(genreId).then((relatedMovies) {
+      mRelatedMovies = relatedMovies;
+      notifyListeners();
+    }).catchError((error) {
+      debugPrint(error.toString());
+    });
   }
 
 }

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:movie_app/data/vos/base_actor_vo.dart';
@@ -80,4 +81,39 @@ class ActorVO extends BaseActorVO{
   factory ActorVO.fromJson(Map<String, dynamic> json) => _$ActorVOFromJson(json);
 
   Map<String, dynamic> toJson() => _$ActorVOToJson(this);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is ActorVO &&
+              runtimeType == other.runtimeType &&
+              adult == other.adult &&
+              id == other.id &&
+              const ListEquality().equals(knownFor, other.knownFor) &&
+              popularity == other.popularity &&
+              gender == other.gender &&
+              knownForDepartment == other.knownForDepartment &&
+              name == other.name &&
+              profilePath == other.profilePath &&
+              originalName == other.originalName &&
+              castId == other.castId &&
+              character == other.character &&
+              creditId == other.creditId &&
+              order == other.order;
+
+  @override
+  int get hashCode =>
+      adult.hashCode ^
+      id.hashCode ^
+      knownFor.hashCode ^
+      popularity.hashCode ^
+      gender.hashCode ^
+      knownForDepartment.hashCode ^
+      name.hashCode ^
+      profilePath.hashCode ^
+      originalName.hashCode ^
+      castId.hashCode ^
+      character.hashCode ^
+      creditId.hashCode ^
+      order.hashCode;
 }

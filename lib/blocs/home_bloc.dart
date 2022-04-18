@@ -79,51 +79,61 @@ import 'package:movie_app/data/vos/movie_vo.dart';
 class HomeBloc extends ChangeNotifier {
 
   /// States
-  late List<MovieVO> nowPlayingMovies;
-  late List<MovieVO> popularMovies;
-  late List<MovieVO> topRatedMovies;
-  late List<MovieVO> moviesByGenre;
-  late List<GenreVO> mGenreList;
-  late List<ActorVO> actors;
+  List<MovieVO> nowPlayingMovies = [];
+  List<MovieVO> popularMovies = [];
+  List<MovieVO> topRatedMovies = [];
+  List<MovieVO> moviesByGenre = [];
+  List<GenreVO> mGenreList = [];
+  List<ActorVO> actors = [];
+
+  int pageForNowPlayingMovies = 1;
 
   MovieModel movieModel = MovieModelImpl();
 
-  HomeBloc() {
+  HomeBloc([MovieModel? mMovieModel]) {
 
-    movieModel.getNowPlayingMoviesFromDatabase().then((movieList) {
+    if (mMovieModel != null) {
+      this.movieModel = mMovieModel;
+    }
+
+    movieModel.getNowPlayingMoviesFromDatabase().listen((movieList) {
       nowPlayingMovies = movieList;
       notifyListeners();
-    }).catchError((error) {
+    }).onError((error) {
       debugPrint(error.toString());
     });
 
-    movieModel.getPopularMoviesFromDatabase().then((movieList) {
+    movieModel.getPopularMoviesFromDatabase().listen((movieList) {
       popularMovies = movieList;
       notifyListeners();
-    }).catchError((error) {
+    }).onError((error) {
       debugPrint(error.toString());
     });
 
-    movieModel.getGenresFromDatabase().then((genreList) {
+    movieModel.getGenres().then((genreList) {
       mGenreList = genreList;
 
-      getMoviesByGenreAndRefresh(mGenreList.first.id ?? 0);
+      if (mGenreList.isNotEmpty) {
+        getMoviesByGenreAndRefresh(mGenreList.first.id ?? 0);
+      }
     }).catchError((error) {
       debugPrint(error.toString());
     });
 
-    movieModel.getGenresFromDatabase().then((genreList) {
+    movieModel.getGenresFromDatabase().listen((genreList) {
       mGenreList = genreList;
 
-      getMoviesByGenreAndRefresh(mGenreList.first.id ?? 0);
-    }).catchError((error) {
+      if (mGenreList.isNotEmpty) {
+        getMoviesByGenreAndRefresh(mGenreList.first.id ?? 0);
+      }
+    }).onError((error) {
       debugPrint(error.toString());
     });
 
-    movieModel.getTopRatedMoviesFromDatabase().then((movieList) {
+    movieModel.getTopRatedMoviesFromDatabase().listen((movieList) {
       topRatedMovies = movieList;
       notifyListeners();
-    }).catchError((error) {
+    }).onError((error) {
       debugPrint(error.toString());
     });
 
@@ -134,10 +144,10 @@ class HomeBloc extends ChangeNotifier {
       debugPrint(error.toString());
     });
 
-    movieModel.getAllActorsFromDatabase().then((actorList) {
+    movieModel.getAllActorsFromDatabase().listen((actorList) {
       actors = actorList;
       notifyListeners();
-    }).catchError((error) {
+    }).onError((error) {
       debugPrint(error.toString());
     });
 
@@ -156,4 +166,13 @@ class HomeBloc extends ChangeNotifier {
     });
   }
 
+  void nowPlayingMovieListEndReached() {
+    this.pageForNowPlayingMovies += 1;
+    movieModel.getNowPlayingMovies(pageForNowPlayingMovies);
+  }
+
 }
+/*
+if (nowPlayingMovies.isNotEmpty) {
+nowPlayingMovies.sort((a, b) => a.id ?? 0 - b.id);
+}*/

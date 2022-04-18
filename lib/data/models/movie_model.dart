@@ -42,10 +42,10 @@ abstract class MovieModel extends Model {
   Future<MovieVO> getMovieDetails(int movieId);
   Future<List<List<ActorVO>?>> getCreditsByMovie(int movieId);
 
-  Future<List<MovieVO>> getTopRatedMoviesFromDatabase();
-  Future<List<MovieVO>> getNowPlayingMoviesFromDatabase();
-  Future<List<MovieVO>> getPopularMoviesFromDatabase();
-  Future<List<GenreVO>> getGenresFromDatabase();
-  Future<List<ActorVO>> getAllActorsFromDatabase();
-  Future<MovieVO> getMovieDetailsFromDatabase(int movieId);
+  Stream<List<MovieVO>> getTopRatedMoviesFromDatabase();
+  Stream<List<MovieVO>> getNowPlayingMoviesFromDatabase();
+  Stream<List<MovieVO>> getPopularMoviesFromDatabase();
+  Stream<List<GenreVO>> getGenresFromDatabase();
+  Stream<List<ActorVO>> getAllActorsFromDatabase();
+  Stream<MovieVO?> getMovieDetailsFromDatabase(int movieId);
 }

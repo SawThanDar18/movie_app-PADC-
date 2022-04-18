@@ -2,7 +2,6 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_app/blocs/home_bloc.dart';
-import 'package:movie_app/data/models/movie_model_impl.dart';
 import 'package:movie_app/data/vos/actor_vo.dart';
 import 'package:movie_app/data/vos/genre_vo.dart';
 import 'package:movie_app/data/vos/movie_vo.dart';
@@ -15,6 +14,7 @@ import 'package:movie_app/viewitems/movie_view.dart';
 import 'package:movie_app/viewitems/showcase_view.dart';
 import 'package:movie_app/widgets/actor_and_creators_section_view.dart';
 import 'package:movie_app/widgets/text_see_more.dart';
+import 'package:movie_app/widgets/title_and_horizontal_movie_list_view.dart';
 import 'package:movie_app/widgets/title_text.dart';
 import 'package:movie_app/widgets/title_text_with_see_more_view.dart';
 import 'package:provider/provider.dart';
@@ -105,10 +105,15 @@ class HomePage extends StatelessWidget {
                 // ),
                 Selector<HomeBloc, List<MovieVO>>(
                   selector: (context, bloc) => bloc.nowPlayingMovies,
-                  builder: (context, nowPlayingMovieList, child) => BestPopularMoviesAndSerialsSectionView(
+                  builder: (context, nowPlayingMovieList, child) => TitleAndHorizontalMovieListView(
+                    title: MAIN_SCREEN_BEST_POPULAR_MOVIES_AND_SERIALS,
                     onTapMovie: (movieId) =>
                         _navigateToMovieDetailsScreen(context, movieId),
                     nowPlayingMovies: nowPlayingMovieList,
+                    onListEndReached: () {
+                      HomeBloc homeBloc = Provider.of(context, listen: false);
+                      homeBloc.nowPlayingMovieListEndReached();
+                    },
                   ),
                 ),
                 SizedBox(
@@ -334,74 +339,13 @@ class _BannerSectionViewState extends State<BannerSectionView> {
           height: MARGIN_MEDIUM_2,
         ),
         DotsIndicator(
-          dotsCount: widget.movieList?.length ?? 1,
+          dotsCount: (widget.movieList?.length == 0) ? 1 : widget.movieList?.length ?? 1,
           position: _position,
           decorator: DotsDecorator(
             color: HOME_SCREEN_BANNER_DOTS_INACTIVE_COLOR,
             activeColor: PLAY_BUTTON_COLOR,
           ),
         ),
-      ],
-    );
-  }
-}
-
-class HorizontalMovieListView extends StatelessWidget {
-  final Function(int?) onTapMovie;
-  final List<MovieVO>? movieLists;
-
-  HorizontalMovieListView({required this.onTapMovie, required this.movieLists});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: MOVIE_LIST_HEIGHT,
-      child: (movieLists != null)
-          ? ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.only(left: MARGIN_MEDIUM_2),
-              itemCount: movieLists?.length,
-              itemBuilder: (BuildContext context, int index) {
-                return MovieView(
-                    onTapMovie: () {
-                      this.onTapMovie(
-                        movieLists?[index].id,
-                      );
-                    },
-                    movie: movieLists?[index]);
-              },
-            )
-          : Center(
-              child: CircularProgressIndicator(),
-            ),
-    );
-  }
-}
-
-class BestPopularMoviesAndSerialsSectionView extends StatelessWidget {
-  final Function(int?) onTapMovie;
-  final List<MovieVO>? nowPlayingMovies;
-
-  BestPopularMoviesAndSerialsSectionView(
-      {required this.onTapMovie, required this.nowPlayingMovies});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          margin: EdgeInsets.only(left: MARGIN_MEDIUM_2),
-          child: TitleText(MAIN_SCREEN_BEST_POPULAR_MOVIES_AND_SERIALS),
-        ),
-        SizedBox(
-          height: MARGIN_MEDIUM,
-        ),
-        HorizontalMovieListView(
-            onTapMovie: (movieId) {
-              this.onTapMovie(movieId);
-            },
-            movieLists: nowPlayingMovies),
       ],
     );
   }
@@ -485,8 +429,6 @@ class GenreSectionView extends StatelessWidget {
   final Function(int?) onTapMovie;
   final Function(int?) onChooseGenre;
 
-  HomeBloc homeBloc = HomeBloc();
-
   GenreSectionView(
       {required this.genreList,
       required this.moviesByGenre,
@@ -528,6 +470,10 @@ class GenreSectionView extends StatelessWidget {
           child: HorizontalMovieListView(
             onTapMovie: (movieId) => this.onTapMovie(movieId),
             movieLists: moviesByGenre,
+            onListEndReached: () {
+              HomeBloc homeBloc = Provider.of(context, listen: false);
+              homeBloc.nowPlayingMovieListEndReached();
+            },
           ),
         ),
       ],

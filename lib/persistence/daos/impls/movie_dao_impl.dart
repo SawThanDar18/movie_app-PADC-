@@ -1,42 +1,53 @@
+import 'package:hive/hive.dart';
 import 'package:movie_app/data/vos/movie_vo.dart';
+import 'package:movie_app/persistence/hive_constants.dart';
 
-/*class MovieDao {
-  static final MovieDao _singleton = MovieDao._internal();
+import '../movie_dao.dart';
 
-  factory MovieDao() {
+class MovieDaoImpl extends MovieDao {
+  static final MovieDaoImpl _singleton = MovieDaoImpl._internal();
+
+  factory MovieDaoImpl() {
     return _singleton;
   }
 
-  MovieDao._internal();
+  MovieDaoImpl._internal();
 
+  @override
   void saveMovies(List<MovieVO> movies) async {
     Map<int, MovieVO> movieMap = Map.fromIterable(movies,
         key: (movie) => movie.id, value: (movie) => movie);
     await getMovieBox().putAll(movieMap);
   }
 
+  @override
   void saveSingleMovie(MovieVO movie) async {
     return getMovieBox().put(movie.id, movie);
   }
 
+  @override
   List<MovieVO> getAllMovies() {
     return getMovieBox().values.toList();
   }
 
+  @override
   MovieVO? getMovieById(int movieId) {
     return getMovieBox().get(movieId);
   }
 
+  @override
   Stream<void> getAllMoviesEventStream() {
     return getMovieBox().watch();
   }
 
+  @override
   Stream<List<MovieVO>> getNowPlayingMoviesStream() {
     return Stream.value(getAllMovies()
         .where((element) => element.isNowPlaying ?? false)
         .toList());
   }
 
+  @override
   List<MovieVO> getNowPlayingMovies() {
     if ((getAllMovies().isNotEmpty)) {
       return getAllMovies()
@@ -47,11 +58,13 @@ import 'package:movie_app/data/vos/movie_vo.dart';
     }
   }
 
+  @override
   Stream<List<MovieVO>> getPopularMoviesStream() {
     return Stream.value(
         getAllMovies().where((element) => element.isPopular ?? false).toList());
   }
 
+  @override
   List<MovieVO> getPopularMovies() {
     if ((getAllMovies().isNotEmpty)) {
       return getAllMovies()
@@ -62,12 +75,14 @@ import 'package:movie_app/data/vos/movie_vo.dart';
     }
   }
 
+  @override
   Stream<List<MovieVO>> getTopRatedMoviesStream() {
     return Stream.value(getAllMovies()
         .where((element) => element.isTopRated ?? false)
         .toList());
   }
 
+  @override
   List<MovieVO> getTopRatedMovies() {
     if ((getAllMovies().isNotEmpty)) {
       return getAllMovies()
@@ -81,30 +96,4 @@ import 'package:movie_app/data/vos/movie_vo.dart';
   Box<MovieVO> getMovieBox() {
     return Hive.box<MovieVO>(BOX_NAME_MOVIE_VO);
   }
-}*/
-
-abstract class MovieDao {
-
-  void saveMovies(List<MovieVO> movies);
-
-  void saveSingleMovie(MovieVO movie);
-
-  List<MovieVO> getAllMovies();
-
-  MovieVO? getMovieById(int movieId);
-
-  Stream<void> getAllMoviesEventStream();
-
-  Stream<List<MovieVO>> getNowPlayingMoviesStream();
-
-  List<MovieVO> getNowPlayingMovies();
-
-  Stream<List<MovieVO>> getPopularMoviesStream();
-
-  List<MovieVO> getPopularMovies();
-
-  Stream<List<MovieVO>> getTopRatedMoviesStream();
-
-  List<MovieVO> getTopRatedMovies();
-
 }

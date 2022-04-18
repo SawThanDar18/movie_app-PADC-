@@ -10,6 +10,7 @@ import 'package:movie_app/resources/strings.dart';
 import 'package:movie_app/widgets/actor_and_creators_section_view.dart';
 import 'package:movie_app/widgets/gradient_view.dart';
 import 'package:movie_app/widgets/rating_view.dart';
+import 'package:movie_app/widgets/title_and_horizontal_movie_list_view.dart';
 import 'package:movie_app/widgets/title_text.dart';
 import 'package:provider/provider.dart';
 
@@ -23,8 +24,8 @@ class MovieDetailsPage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MovieDetailsBloc(movieId),
       child: Scaffold(
-        body: Selector<MovieDetailsBloc, MovieVO>(
-          selector: (context, bloc) => bloc.mMovie!,
+        body: Selector<MovieDetailsBloc, MovieVO?>(
+          selector: (context, bloc) => bloc.mMovie,
           builder: (context, movie, child) => Container(
             color: HOME_SCREEN_BACKGROUND_COLOR,
             child: (movie != null) ?
@@ -48,7 +49,7 @@ class MovieDetailsPage extends StatelessWidget {
                       height: MARGIN_LARGE,
                     ),
                     Selector<MovieDetailsBloc, List<ActorVO>>(
-                      selector: (context, bloc) => bloc.castList ?? [],
+                      selector: (context, bloc) => bloc.castList,
                       builder: (context, actorList, child) => ActorAndCreatorsSectionView(
                         ACTORS_TITLE,
                         "",
@@ -70,11 +71,25 @@ class MovieDetailsPage extends StatelessWidget {
                       height: MARGIN_LARGE,
                     ),
                     Selector<MovieDetailsBloc, List<ActorVO>>(
-                      selector: (context, bloc) => bloc.crewList ?? [],
+                      selector: (context, bloc) => bloc.crewList,
                       builder: (context, crewList, child) => ActorAndCreatorsSectionView(
                         CREATORS_TITLE,
                         CREATORS_SEE_MORE,
                         actorsList: crewList,
+                      ),
+                    ),
+                    SizedBox(
+                      height: MARGIN_LARGE,
+                    ),
+                    Selector<MovieDetailsBloc, List<MovieVO>?>(
+                      selector: (context, bloc) => bloc.mRelatedMovies,
+                      builder: (context, relatedMovies, child) =>  TitleAndHorizontalMovieListView(
+                        title: MOVIE_DETAILS_SCREEN_RELATED_MOVIES,
+                        onTapMovie: (movieId) =>
+                            _navigateToMovieDetailsScreen(context, movieId),
+                        nowPlayingMovies: relatedMovies,
+                        onListEndReached: () {
+                        },
                       ),
                     ),
                   ]),
@@ -85,6 +100,21 @@ class MovieDetailsPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _navigateToMovieDetailsScreen(BuildContext context, int? movieId) {
+    if (movieId != null) {
+      // modelImpl.getMovieDetails(movieId);
+      // modelImpl.getMovieDetailsFromDatabase(movieId);
+      // modelImpl.getCreditsByMovie(movieId);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            //builder: (context) => MovieDetailsPage()));
+              builder: (context) => MovieDetailsPage(
+                movieId: movieId,
+              )));
+    }
   }
 
 }

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:movie_app/data/vos/collection_vo.dart';
@@ -162,6 +163,74 @@ class MovieVO {
 
   //convert from datatype to json
   Map<String, dynamic> toJson() => _$MovieVOToJson(this);
+
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MovieVO &&
+          runtimeType == other.runtimeType &&
+          adult == other.adult &&
+          backdropPath == other.backdropPath &&
+          const ListEquality().equals(genreIds, other.genreIds) &&
+          id == other.id &&
+          originalLanguage == other.originalLanguage &&
+          originalTitle == other.originalTitle &&
+          overview == other.overview &&
+          popularity == other.popularity &&
+          posterPath == other.posterPath &&
+          releaseDate == other.releaseDate &&
+          title == other.title &&
+          video == other.video &&
+          voteAverage == other.voteAverage &&
+          voteCount == other.voteCount &&
+          belongsToCollection == other.belongsToCollection &&
+          budget == other.budget &&
+          genres == other.genres &&
+          homePage == other.homePage &&
+          imdbId == other.imdbId &&
+          const ListEquality().equals(productionCompanies, other.productionCompanies) &&
+          const ListEquality().equals(productionCountries, other.productionCountries) &&
+          revenue == other.revenue &&
+          runtime == other.runtime &&
+          const ListEquality().equals(spokenLanguages, other.spokenLanguages) &&
+          status == other.status &&
+          tagline == other.tagline &&
+          isNowPlaying == other.isNowPlaying &&
+          isPopular == other.isPopular &&
+          isTopRated == other.isTopRated;
+
+  @override
+  int get hashCode =>
+      adult.hashCode ^
+      backdropPath.hashCode ^
+      genreIds.hashCode ^
+      id.hashCode ^
+      originalLanguage.hashCode ^
+      originalTitle.hashCode ^
+      overview.hashCode ^
+      popularity.hashCode ^
+      posterPath.hashCode ^
+      releaseDate.hashCode ^
+      title.hashCode ^
+      video.hashCode ^
+      voteAverage.hashCode ^
+      voteCount.hashCode ^
+      belongsToCollection.hashCode ^
+      budget.hashCode ^
+      genres.hashCode ^
+      homePage.hashCode ^
+      imdbId.hashCode ^
+      productionCompanies.hashCode ^
+      productionCountries.hashCode ^
+      revenue.hashCode ^
+      runtime.hashCode ^
+      spokenLanguages.hashCode ^
+      status.hashCode ^
+      tagline.hashCode ^
+      isNowPlaying.hashCode ^
+      isPopular.hashCode ^
+      isTopRated.hashCode;
 
   List<String> getGenreListAsStringList() {
     return genres?.map((genre) => genre.name ?? "").toList() ?? [];
